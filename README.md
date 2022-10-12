@@ -9,3 +9,9 @@ A collection of code found in the Late Night Snackin' game:
 - Item Inventory [TBA]
 - Item Collection [TBA]
 - UI Sound Bar [TBA]
+
+<p align="center">
+
+
+![broo](https://user-images.githubusercontent.com/32820882/195275726-641bbb93-889e-46d7-a2f2-bb918d19ba36.gif)
+</p>
