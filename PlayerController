@@ -1,0 +1,208 @@
+///<summary>
+/// This class manages the controls for the player
+///</summary>
+public class PlayerController : MonoBehaviour {
+
+    private InventoryManager inventory;
+    private PlayerVisibility playerVisibility;
+    public Slot inventorySlot1;
+    public Slot inventorySlot2;
+    public Slot inventorySlot3;
+    public bool inventoryIsUsed = false; //tracks when the 'use inventory' buttons have been called
+
+    public float totalSpeed;
+    public float moveSpeed;
+    public float minSpeed;
+    public float maxSpeed;
+    public float standingSpeed = 0f;
+    public float walkSpeed = 1f;
+    public float sprintSpeed = 2.50f;
+
+    private Vector2 movement;
+    float moveX;
+    float moveY;
+    
+    public Rigidbody2D rb;
+    public Animator animator;
+    private Collider playerCollider;
+
+    private Interactable[] interactableObjects;
+
+    //item cooldown section
+    private PlayerSound playerSound;
+    
+    //item stats + cooldown related
+    public float[] itemStatMod;
+
+    private void Start(){
+        inventory = GetComponent<InventoryManager>();
+        playerVisibility = GetComponent<PlayerVisibility>();
+        playerCollider = GetComponent<Collider>();
+
+        //item cooldown section
+        playerSound = GetComponent<PlayerSound>();
+
+        GameObject[] hidingSpaces = GameObject.FindGameObjectsWithTag("Hiding Space");
+        interactableObjects = new Interactable[hidingSpaces.Length];
+        for(int i = 0; i < hidingSpaces.Length; i++)
+        {
+            interactableObjects[i] = hidingSpaces[i].GetComponent<Interactable>();
+        }   
+    }
+
+    // Update is called once per frame.
+    void Update()
+    {
+        move();
+        useItem();
+        goHide();
+        // itemCoolDownSlowly();
+    }
+
+    void FixedUpdate()
+    {
+        Vector2 movement = new Vector2(moveX, moveY).normalized;
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    ///<summary>
+    /// Controls the direction the player is moving and how fast 
+    /// the player can move depending on button and item inputs.
+    ///</summary>
+    private void move(){
+       moveX = Input.GetAxisRaw("Horizontal");
+       moveY = Input.GetAxisRaw("Vertical");
+
+        animator.SetFloat("Horizontal", moveX);
+        animator.SetFloat("Vertical", moveY);
+        animator.SetFloat("Speed", moveSpeed);
+    
+        if(Input.GetAxis("Horizontal") == 1 || Input.GetAxis("Horizontal") == -1 || Input.GetAxis("Vertical") == 1 || Input.GetAxis("Vertical") == -1)
+        {
+           animator.SetFloat("LastMoveX", Input.GetAxisRaw("Horizontal"));
+           animator.SetFloat("LastMoveY", Input.GetAxisRaw("Vertical"));
+
+        }
+        
+        if(Input.GetButton("Sprint")){
+        moveSpeed = sprintSpeed;
+        } 
+        else{
+        moveSpeed = walkSpeed;
+        }
+
+        if(!Input.GetButtonDown("Sprint") && moveX == 0 && moveY == 0){ //for when the player isn't moving at all
+            moveSpeed = standingSpeed;
+        }
+
+        if (playerVisibility.isHidden == true){
+        moveSpeed = 0f;
+        }
+
+        //cooldown + item stats section
+        foreach(float stat in itemStatMod){
+            if(stat != 0){
+                moveSpeed *= stat; //switch math signs here
+            }
+        }
+
+        //preventing speed from going negative
+        moveSpeed = Mathf.Clamp(moveSpeed, minSpeed, maxSpeed);
+
+    }
+
+
+    //ITEM POWERUPS SECTION
+    
+    private void useItem(){
+        //if 1 button is pressed, use the item in the first slot
+        if (Input.GetButtonDown("Item1"))
+        {
+            inventoryIsUsed = false;
+            // first CHECK to see if the inventory is full at this slot so it can be used
+                if (inventory.isFull[0] == true){
+                    inventoryIsUsed = true;
+                    Debug.Log("Item 1 gone");
+                    // if inventory is full, use item
+                    inventorySlot1.useItem();
+                    inventory.applyToSlot(0);
+                    inventory.isFull[0] = false;
+                }
+        }
+        //if 2 button is pressed, use the item in the second slot
+        if (Input.GetButtonDown("Item2"))
+        {
+            // first CHECK to see if the inventory is full at this slot so it can be used
+                if (inventory.isFull[1] == true){
+                    inventoryIsUsed = true;
+                    Debug.Log("Item 2 gone");
+                    // if inventory is full, use item
+                    inventorySlot2.useItem();
+                    inventory.applyToSlot(1);
+                    inventory.isFull[1] = false;
+                }
+        }
+        //if 3 button is pressed, use the item in the third slot
+        if (Input.GetButtonDown("Item3"))
+        {
+            // first CHECK to see if the inventory is full at this slot so it can be used
+                if (inventory.isFull[2] == true){
+                    inventoryIsUsed = true;
+                    Debug.Log("Item 3 gone");
+                    // if inventory is full, use item
+                    inventorySlot3.useItem();
+                    inventory.applyToSlot(2);
+                    inventory.isFull[2] = false;
+                }
+        }
+
+            
+    }
+
+    //increasing cooldownTimeElapsed and decreasing the effects of the item stat on the player
+    public IEnumerator itemCoolDownSlowly(ItemStats itemStats, int index){
+        float cooldownTimeElapsed = 0; //the cooldown time that has passed by so far
+        itemStatMod[index] = itemStats.speedStat;
+
+        //TODO: call cooldown time to play
+        //static item effects
+        while (cooldownTimeElapsed < itemStats.cooldownTime)
+        {
+            itemStatMod[index] = itemStats.speedStat;
+            cooldownTimeElapsed += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        
+        //TODO: call cooldown time to stop
+        itemStatMod[index] = 0;
+        
+    }
+
+    //PLAYER HIDING ABILITY SECTION
+
+    public void goHide(){
+        foreach(Interactable hidingPlace in interactableObjects){
+            if(hidingPlace.checkingIfInRange()){ //if an object is in range of the player is TRUE
+                //press E key to interact
+                if (Input.GetButtonDown("Hide") && playerVisibility.isHidden == false){
+                    AudioManager.instance.Play("Hide");
+                    Debug.Log("HIDE!");
+                    playerVisibility.playerIsVisible = false;
+                    GetComponent<SpriteRenderer>().enabled = false; //these two lines hide it from the game visually and turn off the collider
+                    gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+                    playerVisibility.isHidden = true;
+                } else if(Input.GetButtonDown("Hide") && playerVisibility.isHidden == true){
+                    Debug.Log("No longer hiding");
+                    playerVisibility.playerIsVisible = true;
+                    GetComponent<SpriteRenderer>().enabled = true; //these two lines hide it from the game visually and turn off the collider
+                    gameObject.layer = LayerMask.NameToLayer("Default");
+                    playerVisibility.isHidden = false;
+                }
+            }
+        }
+
+    }
+
+
+}
