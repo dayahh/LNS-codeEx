@@ -10,4 +10,6 @@ A collection of code found in the Late Night Snackin' game:
 - 🚧Item Collection
 - 🚧UI Sound Bar
 
-![My Image](general-gameplay.gif)
+![gameplay gif](general-gameplay.gif) 
+![screenshot](sc1.jpg) ![screenshot](sc2.jpg) ![screenshot](sc3.jpg) 
+
