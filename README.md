@@ -9,7 +9,7 @@
 ## Code Samples 🍰
 - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/PlayerController" target="_blank">Player Controller</a>
 - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/InventoryManager" target="_blank">Item Inventory</a>
-  - <a href="" target="_blank">Item Collection</a>
+  - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/ItemPickup" target="_blank">Item Collection</a>
 - UI Noise Meter
   - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/NoiseMeterController" target="_blank">Controller</a>
   - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/PlayerSound" target="_blank">Stat Tracker</a>
