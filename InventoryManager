@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+///<summary>
+/// This class manages the inventory system within the game.
+///</summary>
+public class InventoryManager : MonoBehaviour {
+
+    public bool[] isFull; //checks if there's already an item inside the inventory slot or not
+    public GameObject[] slots; //used to parent the item that is picked up to a given inventory slot
+    public float[] itemStats;
+    public int maxSlots = 3;
+    private ItemPickup[] storedItems;
+
+    private void Start(){
+        storedItems = new ItemPickup[maxSlots]; //the amount of slots are 3 for right now
+    }
+
+    public void addToInventory(ItemPickup itemPickup, int index){
+        storedItems[index] = itemPickup;
+    }
+
+    public void applyToSlot(int index){
+        PlayerController player = GetComponent<PlayerController>();
+        storedItems[index].gameObject.GetComponent<ItemStats>().applyStat(player, index);
+    }
+
+}
