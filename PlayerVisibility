@@ -1,0 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+///<summary>
+/// This class keeps track of the visibility state of the player
+///</summary>
+public class PlayerVisibility : MonoBehaviour {
+
+  private PlayerController player;
+
+    public bool isHidden = false; //for only hiding spots
+    public bool playerIsVisible = true; //overall player visibility
+
+    //item stats + cooldown related
+    private ItemStats itemStats;
+    public float cooldownTime; //the cooldown time that is coming in from the ItemStats script
+    public float cooldownTimeElapsed; //the cooldown time that has passed by so far
+    public float originalItemStatMod; //the stat that is coming in from the ItemStats script
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        isHidden = false; //player is visible at the start of the game  
+        player = GetComponent<PlayerController>();
+    }
+
+    public void effectedByItem(ItemStats itemStats){
+        if(itemStats.isVisible == 1.0f){ //[1] YES the player is visible
+            playerIsVisible = true;
+            Debug.Log("applied stat to make icon VISIBLE");
+        } else if(itemStats.isVisible == 2.0f){ //[2] NO the player is NOT visible
+            playerIsVisible = false;
+            Debug.Log("applied stat to make icon HIDDEN");
+            StartCoroutine(itemCoolDownSlowly(itemStats));
+        }
+        
+    }
+
+    IEnumerator itemCoolDownSlowly(ItemStats itemStats){
+        yield return new WaitForSeconds(itemStats.cooldownTime);
+        // Debug.Log("cooldown is at " + cooldownTime);
+        if(isHidden == true){
+            playerIsVisible = false;
+        } else{
+            playerIsVisible = true;
+        }
+    }
+    
+}
