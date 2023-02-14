@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+///<summary>
+/// This class keeps track of the sounds that the player makes
+///</summary>
+public class PlayerSound : MonoBehaviour
+{
+    PlayerController player;
+
+    public float playerNoises = 0.0f;
+    public float minPlayerNoise = 0f;
+    public float maxPlayerNoise = 100.0f;
+
+    //item stats + cooldown related
+    public float cooldownTime; //the cooldown time that is coming in from the ItemStats script
+    public float cooldownTimeElapsed; //the cooldown time that has passed by so far
+    public float originalItemStatMod; //the stat that is coming in from the ItemStats script
+    public float[] itemStatMod;
+
+    void Start()
+    {
+        player = GetComponent<PlayerController>();     
+    }
+
+    void Update()
+    {
+        trackingPlayerSound();
+   
+        foreach(float stat in itemStatMod){
+            if(stat != 0){
+                playerNoises *= stat; 
+            }
+        }
+
+        //preventing player noise and added noise from being too big and too small
+        playerNoises = Mathf.Clamp(playerNoises, minPlayerNoise, maxPlayerNoise);
+    }
+
+    //deals with all the number differences with player sound state
+    private void trackingPlayerSound(){
+        if(player.moveSpeed == player.standingSpeed){
+            playerNoises = 0.0f;
+        } else if(player.moveSpeed == player.sprintSpeed){
+            playerNoises = 50.0f;
+            //add running audio
+        } else if(player.moveSpeed == player.walkSpeed){
+            playerNoises = 30.0f;
+            //add walking audio
+        }
+    }
+
+    public void adjustSound(int index, float delta){
+        itemStatMod[index] -= delta;
+    }
+
+    //increasing cooldownTimeElapsed and decreasing the effects of the item stat on the player
+    public IEnumerator itemCoolDownSlowly(ItemStats itemStats, int index){
+        float cooldownTimeElapsed = 0; //the cooldown time that has passed by so far
+
+        itemStatMod[index] = itemStats.soundStat;
+        while (cooldownTimeElapsed < itemStats.cooldownTime)
+        {
+            itemStatMod[index] = itemStats.soundStat;
+            cooldownTimeElapsed += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+            itemStatMod[index] = 1;
+    }
+
+}
