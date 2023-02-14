@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+///<summary>
+/// This class controls the noise meter UI
+///</summary>
+public class NoiseMeterController : MonoBehaviour
+{
+    int progress = 0;
+    public Slider slider;
+    private PlayerSound playerSound;
+
+    private void Start(){
+        playerSound = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerSound>(); 
+    }
+
+    public void Update(){
+        progress = (int)playerSound.playerNoises;
+        slider.value = progress;
+    }
+}
