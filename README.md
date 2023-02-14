@@ -8,9 +8,14 @@
 
 ## Code Samples 🍰
 - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/PlayerController" target="_blank">Player Controller</a>
-- 🚧Item Inventory
-- 🚧Item Collection
-- 🚧UI Sound Bar
+- <a href="https://github.com/dayahh/LNS-codeEx/blob/main/InventoryManager" target="_blank">Item Inventory</a>
+  - <a href="" target="_blank">Item Collection</a>
+- UI Noise Meter
+  - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/NoiseMeterController" target="_blank">Controller</a>
+  - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/PlayerSound" target="_blank">Stat Tracker</a>
+- UI Visibility Icon
+  - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/VisibilityMeterController" target="_blank">Controller</a>
+  - <a href="https://github.com/dayahh/LNS-codeEx/blob/main/PlayerVisibility" target="_blank">Stat Tracker</a>
 
 ## Gameplay 🍰
 ![gameplay gif](general-gameplay.gif) 
