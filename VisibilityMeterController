@@ -1,0 +1,38 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+///<summary>
+/// This class controls the visibility meter UI
+///</summary>
+public class VisibilityMeterController : MonoBehaviour
+{
+    public Image icon;
+    public Sprite hiddenIcon;
+    public Sprite visibleIcon;
+    private PlayerVisibility playerVisibility;
+
+    void Start()
+    {
+        playerVisibility = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerVisibility>();
+    }
+
+    void Update()
+    {
+        playerIsVisible();
+    }
+
+    //changes the image icon of the visibility meter depending on player visibility
+    public void playerIsVisible(){
+        if(playerVisibility.playerIsVisible == false){ //if player is hidden
+            icon.sprite = hiddenIcon;
+            // Debug.Log("player is HIDDEN");
+        }
+        else if(playerVisibility.playerIsVisible == true){ //if player is visible
+            icon.sprite = visibleIcon;
+            // Debug.Log("player is VISIBLE");
+        }
+    }
+
+}
